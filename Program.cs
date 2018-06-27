@@ -35,7 +35,7 @@ class MainClass {
 			return 1;
 		}
 
-		if (show_help) {
+		if (show_help || string.IsNullOrEmpty (hash) || string.IsNullOrEmpty (repository)) {
 			Console.WriteLine ("github-status-editor [OPTIONS]");
 			os.WriteOptionDescriptions (Console.Out);
 			return 0;
