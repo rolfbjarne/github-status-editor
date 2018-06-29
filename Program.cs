@@ -22,8 +22,8 @@ class MainClass {
 			{ "hash=", "The hash whose statuses to view/edit", (v) => hash = v },
 			{ "repository=", "The repository to access (use owner/repo notation, for instance xamarin/xamarin-macios)", (v) => repository = v },
 			{ "add=", "Add a status with the specified state (error, failure, pending or success)", (v) => new_status.State = v },
-			{ "target-url=", "The target url of the new status", (v) => new_status.Target_Url = v },
-			{ "description=", "The description of the new status", (v) => new_status.Description = v },
+			{ "target-url=", "The target url of the new/edited status", (v) => new_status.Target_Url = v },
+			{ "description=", "The description of the new/edited status", (v) => new_status.Description = v },
 			{ "context=", "The context of the new status", (v) => new_status.Context = v },
 			{ "authorization=", "The personal access token to use to authorize with GitHub", (v) => authorization = v },
 			{ "set=", "Sets statuses to the specified state. If --context is passed, only statuses with the specified context will be changed.", (v) => set_state = v },
@@ -66,7 +66,16 @@ class MainClass {
 					continue;
 				}
 				ghs.State = set_state;
-				Console.WriteLine ($"    Setting status with Context=\"{ghs.Context}\" Description=\"{ghs.Description}\" Target Url=\"{ghs.Target_Url}\" to state=\"{set_state}\"");
+				var logDescription = string.Empty;
+				if (!string.IsNullOrEmpty (new_status.Description)) {
+					ghs.Description = new_status.Description;
+					logDescription = $" and to Description=\"{ghs.Description}\"";
+				}
+				if (!string.IsNullOrEmpty (new_status.Target_Url)) {
+					ghs.Target_Url = new_status.Target_Url;
+					logDescription += $" and to Target Url=\"{ghs.Target_Url}\"";
+				}
+				Console.WriteLine ($"    Setting status with Context=\"{ghs.Context}\" Description=\"{ghs.Description}\" Target Url=\"{ghs.Target_Url}\" to state=\"{set_state}\"{logDescription}");
 				await AddStatus (hc, ghs, repository, hash, authorization);
 			}
 
