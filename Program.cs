@@ -16,6 +16,7 @@ class MainClass {
 		var authorization = string.Empty;
 		var new_status = new GitHubStatus ();
 		var set_state = string.Empty;
+		var message = string.Empty;
 
 		var os = new OptionSet {
 			{ "h|help|?", "Show help", (v) => show_help = true },
@@ -27,6 +28,7 @@ class MainClass {
 			{ "context=", "The context of the new status", (v) => new_status.Context = v },
 			{ "authorization=", "The personal access token to use to authorize with GitHub", (v) => authorization = v },
 			{ "set=", "Sets statuses to the specified state. If --context is passed, only statuses with the specified context will be changed.", (v) => set_state = v },
+			{ "message=", "A message that will be appended to the tracking comment on the commit. Prepend with @ to specify a filename.", (v) => message = v },
 		};
 
 		var others = os.Parse (args);
@@ -48,6 +50,25 @@ class MainClass {
 			hc.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue ("token", authorization);
 
 		var rv = await ReportStatuses (hc, repository, hash);
+
+		if (message.StartsWith ("@", StringComparison.Ordinal))
+			message = File.ReadAllText (message.Substring (1));
+
+		string comment = string.Empty;
+		if (!string.IsNullOrEmpty (message)) {
+			if (!string.IsNullOrEmpty (set_state)) {
+				comment = $"Setting state to '{set_state}' ";
+				if (!string.IsNullOrEmpty (new_status.Context)) {
+					comment += $"where context is '{new_status.Context}'";
+				} else {
+					comment += "for all statuses";
+				}
+			} else if (new_status.State != null) {
+				comment = $"Adding new state '{new_status.State}' with context '{new_status.Context}', target url '{new_status.Target_Url}' and description '{new_status.Description}'";
+			}
+			comment += "\n\n" + message;
+		}
+
 
 		if (!string.IsNullOrEmpty (set_state)) {
 			Console.Write ("Changing all statuses");
@@ -76,7 +97,9 @@ class MainClass {
 					logDescription += $" and to Target Url=\"{ghs.Target_Url}\"";
 				}
 				Console.WriteLine ($"    Setting status with Context=\"{ghs.Context}\" Description=\"{ghs.Description}\" Target Url=\"{ghs.Target_Url}\" to state=\"{set_state}\"{logDescription}");
-				await AddStatus (hc, ghs, repository, hash, authorization);
+				var rvS = await AddStatus (hc, ghs, repository, hash, authorization, comment);
+				if (rvS != 0)
+					return rvS;
 			}
 
 			await ReportStatuses (hc, repository, hash);
@@ -84,7 +107,7 @@ class MainClass {
 		}
 
 		if (new_status.State != null)
-			await AddStatus (hc, new_status, repository, hash, authorization);
+			return await AddStatus (hc, new_status, repository, hash, authorization, comment);
 
 		return 0;
 	}
@@ -129,9 +152,22 @@ class MainClass {
 		return rv;
 	}
 
-	async static Task<int> AddStatus (HttpClient wc, GitHubStatus status, string repository, string hash, string authorization)
+	static bool commented;
+	async static Task<int> AddStatus (HttpClient wc, GitHubStatus status, string repository, string hash, string authorization, string comment)
 	{
 		try {
+			if (string.IsNullOrEmpty (comment)) {
+				Console.WriteLine ($"{GetEmojii ("error")} A message is required when adding/switching status(es).");
+				return 1;
+			}
+
+			if (!commented) {
+				var rv = await AddComment (wc, repository, hash, comment);
+				if (rv != 0)
+					return rv;
+				commented = true;
+			}
+
 			var url = $"https://api.github.com/repos/{repository}/statuses/{hash}";
 			//Console.WriteLine ($"Adding status using url: {url}");
 			var data = $@"
@@ -155,7 +191,30 @@ class MainClass {
 			DumpWebException (e);
 			return 1;
 		}
+	}
 
+	async static Task<int> AddComment (HttpClient wc, string repository, string hash, string comment)
+	{
+		try {
+			var url = $"https://api.github.com/repos/{repository}/commits/{hash}/comments";
+			var js = new JavaScriptSerializer ();
+			var data = $@"
+{{
+""body"": {js.Serialize (comment)}
+}}
+";
+			var content = new StringContent (data);
+			var task = wc.PostAsync (url, content);
+			var create_status = await task;
+			if (!create_status.IsSuccessStatusCode) {
+				Console.WriteLine ($"{GetEmojii ("error")} Failed to add comment: {await create_status.Content.ReadAsStringAsync ()}");
+				return 1;
+			}
+			return 0;
+		} catch (WebException e) {
+			DumpWebException (e);
+			return 1;
+		}
 	}
 
 	static void DumpWebException (WebException e)
