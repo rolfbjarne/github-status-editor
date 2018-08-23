@@ -23,7 +23,7 @@ Commit 4fd5e4001144ca3a2b991f2e77c9783963db1851 has 9 statuses, whose combined v
 ### Switch all statuses for a commit to 'success'
 
 ```
-$ github-status-editor --repository=rolfbjarne/testApp --hash=8b4774fd5a2f36ceeaa2fa2529349dd480986077 --set=success --authorization=<GitHub PAT token>
+$ github-status-editor --repository=rolfbjarne/testApp --hash=8b4774fd5a2f36ceeaa2fa2529349dd480986077 --set=success --authorization=<GitHub PAT token> --message "hello galaxy"
 Commit 8b4774fd5a2f36ceeaa2fa2529349dd480986077 has 3 statuses, whose combined value is "failure".
     #1: ❌ State="error" Context="add-context-failure" Description="add-description" Target Url=""
     #2: ❌ State="error" Context="add-context" Description="add-description" Target Url=""
@@ -41,7 +41,7 @@ Commit 8b4774fd5a2f36ceeaa2fa2529349dd480986077 has 3 statuses, whose combined v
 ### Switch a specific context to 'failure'
 
 ```
-$ ./github-status-editor --repository=rolfbjarne/testApp --hash=8b4774fd5a2f36ceeaa2fa2529349dd480986077 --set=failure --authorization=<GitHub PAT token> --context=add-context-failure
+$ ./github-status-editor --repository=rolfbjarne/testApp --hash=8b4774fd5a2f36ceeaa2fa2529349dd480986077 --set=failure --authorization=<GitHub PAT token> --context=add-context-failure --message "hello universe"
 Commit 8b4774fd5a2f36ceeaa2fa2529349dd480986077 has 3 statuses, whose combined value is "success".
     #1: ✅ State="success" Context="add-context-failure" Description="add-description" Target Url=""
     #2: ✅ State="success" Context="add-context" Description="add-description" Target Url=""
