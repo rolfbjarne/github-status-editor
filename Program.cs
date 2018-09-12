@@ -57,12 +57,13 @@ class MainClass {
 		string comment = string.Empty;
 		if (!string.IsNullOrEmpty (message)) {
 			if (!string.IsNullOrEmpty (set_state)) {
-				comment = $"Setting state to '{set_state}' ";
+				comment = $"Setting state to `{set_state}` ";
 				if (!string.IsNullOrEmpty (new_status.Context)) {
-					comment += $"where context is '{new_status.Context}'";
+					comment += $"where context is `{new_status.Context}`";
 				} else {
 					comment += "for all statuses";
 				}
+				comment += ".";
 			} else if (new_status.State != null) {
 				comment = $"Adding new state '{new_status.State}' with context '{new_status.Context}', target url '{new_status.Target_Url}' and description '{new_status.Description}'";
 			}
