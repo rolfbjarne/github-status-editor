@@ -2,6 +2,11 @@
 
 This is a small command-line tool that can list and edit/add GitHub statuses.
 
+It needs a Personal Access Token from GitHub, which can be created
+[here](https://github.com/settings/tokens). The token (probably) needs
+`Full control of private repositories` (it might be enough with
+`Access public repositories`, depending on the repository).
+
 ## Examples
 
 ### List the statuses for a commit
@@ -56,3 +61,33 @@ Commit 8b4774fd5a2f36ceeaa2fa2529349dd480986077 has 3 statuses, whose combined v
     #3: ❌ State="failure" Context="add-context-failure" Description="add-description" Target Url=""
 ```
 
+### Switch a specific context to 'success', providing a file as the message
+
+```
+$ echo "No blocking issues found" > message.txt
+$ ./github-status-editor --repository=xamarin/xamarin-macios --hash=807efadf3838d4bb28ff1fe8a1b4561b074de8ec --set=success --authorization=<GitHub PAT token> --context=continuous-integration/jenkins/branch --message @message.txt
+Commit 807efadf3838d4bb28ff1fe8a1b4561b074de8ec has 7 statuses, whose combined value is "failure".
+    #1: ✅ State="success" Context="PKG-Xamarin.iOS" Description="xamarin.ios-11.99.3.585.pkg" Target Url="https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/xcode10/807efadf3838d4bb28ff1fe8a1b4561b074de8ec/170/package/xamarin.ios-11.99.3.585.pkg"
+    #2: ✅ State="success" Context="PKG-Xamarin.Mac" Description="xamarin.mac-4.99.3.705.pkg" Target Url="https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/xcode10/807efadf3838d4bb28ff1fe8a1b4561b074de8ec/170/package/xamarin.mac-4.99.3.705.pkg"
+    #3: ✅ State="success" Context="manifest" Description="manifest" Target Url="https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/xcode10/807efadf3838d4bb28ff1fe8a1b4561b074de8ec/170/package/manifest"
+    #4: ✅ State="success" Context="Jenkins: Artifacts" Description="artifacts.json" Target Url="https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/xcode10/807efadf3838d4bb28ff1fe8a1b4561b074de8ec/170/package/artifacts.json"
+    #5: ✅ State="success" Context="bundle.zip" Description="bundle.zip" Target Url="https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/xcode10/807efadf3838d4bb28ff1fe8a1b4561b074de8ec/170/package/bundle.zip"
+    #6: ✅ State="success" Context="msbuild.zip" Description="msbuild.zip" Target Url="https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/xcode10/807efadf3838d4bb28ff1fe8a1b4561b074de8ec/170/package/msbuild.zip"
+    #7: ❌ State="error" Context="continuous-integration/jenkins/branch" Description="This commit cannot be built" Target Url="https://jenkins.internalx.com/job/macios/job/xcode10/170/display/redirect"
+Changing all statuses with Context="continuous-integration/jenkins/branch" to "success".
+    Status with Context="PKG-Xamarin.iOS" Description="xamarin.ios-11.99.3.585.pkg" Target Url="https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/xcode10/807efadf3838d4bb28ff1fe8a1b4561b074de8ec/170/package/xamarin.ios-11.99.3.585.pkg" already has the expected state ("success")
+    Status with Context="PKG-Xamarin.Mac" Description="xamarin.mac-4.99.3.705.pkg" Target Url="https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/xcode10/807efadf3838d4bb28ff1fe8a1b4561b074de8ec/170/package/xamarin.mac-4.99.3.705.pkg" already has the expected state ("success")
+    Status with Context="manifest" Description="manifest" Target Url="https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/xcode10/807efadf3838d4bb28ff1fe8a1b4561b074de8ec/170/package/manifest" already has the expected state ("success")
+    Status with Context="Jenkins: Artifacts" Description="artifacts.json" Target Url="https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/xcode10/807efadf3838d4bb28ff1fe8a1b4561b074de8ec/170/package/artifacts.json" already has the expected state ("success")
+    Status with Context="bundle.zip" Description="bundle.zip" Target Url="https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/xcode10/807efadf3838d4bb28ff1fe8a1b4561b074de8ec/170/package/bundle.zip" already has the expected state ("success")
+    Status with Context="msbuild.zip" Description="msbuild.zip" Target Url="https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/xcode10/807efadf3838d4bb28ff1fe8a1b4561b074de8ec/170/package/msbuild.zip" already has the expected state ("success")
+    Setting status with Context="continuous-integration/jenkins/branch" Description="This commit cannot be built" Target Url="https://jenkins.internalx.com/job/macios/job/xcode10/170/display/redirect" to state="success"
+Commit 807efadf3838d4bb28ff1fe8a1b4561b074de8ec has 7 statuses, whose combined value is "success".
+    #1: ✅ State="success" Context="PKG-Xamarin.iOS" Description="xamarin.ios-11.99.3.585.pkg" Target Url="https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/xcode10/807efadf3838d4bb28ff1fe8a1b4561b074de8ec/170/package/xamarin.ios-11.99.3.585.pkg"
+    #2: ✅ State="success" Context="PKG-Xamarin.Mac" Description="xamarin.mac-4.99.3.705.pkg" Target Url="https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/xcode10/807efadf3838d4bb28ff1fe8a1b4561b074de8ec/170/package/xamarin.mac-4.99.3.705.pkg"
+    #3: ✅ State="success" Context="manifest" Description="manifest" Target Url="https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/xcode10/807efadf3838d4bb28ff1fe8a1b4561b074de8ec/170/package/manifest"
+    #4: ✅ State="success" Context="Jenkins: Artifacts" Description="artifacts.json" Target Url="https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/xcode10/807efadf3838d4bb28ff1fe8a1b4561b074de8ec/170/package/artifacts.json"
+    #5: ✅ State="success" Context="bundle.zip" Description="bundle.zip" Target Url="https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/xcode10/807efadf3838d4bb28ff1fe8a1b4561b074de8ec/170/package/bundle.zip"
+    #6: ✅ State="success" Context="msbuild.zip" Description="msbuild.zip" Target Url="https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/xcode10/807efadf3838d4bb28ff1fe8a1b4561b074de8ec/170/package/msbuild.zip"
+    #7: ✅ State="success" Context="continuous-integration/jenkins/branch" Description="This commit cannot be built" Target Url="https://jenkins.internalx.com/job/macios/job/xcode10/170/display/redirect"
+```
