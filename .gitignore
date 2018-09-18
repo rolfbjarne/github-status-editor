@@ -39,3 +39,6 @@ Thumbs.db
 
 # dotCover
 *.dotCover
+
+# mkbundle result
+github-status-editor
