@@ -1,5 +1,11 @@
 #!/bin/bash -e
 
+# Helper script to greenify xamarin-macios commits for internal Jenkins failures.
+# Just pass it the hash of the commit to make green:
+#
+#    ./greenify-xamarin-macios <hash>
+#
+
 cd "$(dirname "${BASH_SOURCE[0]}")"
 
 if test -z "$1"; then
