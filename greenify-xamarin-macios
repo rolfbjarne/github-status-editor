@@ -1,0 +1,27 @@
+#!/bin/bash -e
+
+cd "$(dirname "${BASH_SOURCE[0]}")"
+
+if test -z "$1"; then
+	echo "The hash to greenify must be specified."
+	exit 1
+fi
+
+PAT_FILE=$HOME/.github-status-pat
+if ! test -f "$PAT_FILE"; then
+	echo "You must create a GitHub Personal Access Token, and store it in $PAT_FILE."
+	echo "The README (https://github.com/rolfbjarne/github-status-editor/blob/master/README.md) explains how to get a Personal Access Token."
+	exit 1
+fi
+
+MESSAGE="No blocking issues found"
+if test -n "$2"; then
+	MESSAGE="$2"
+fi
+
+CONTEXT="continuous-integration/jenkins/branch"
+if test -n "$3"; then
+	CONTEXT="$3"
+fi
+
+./github-status-editor --repository=xamarin/xamarin-macios --set=success --authorization="$(cat "$PAT_FILE")" --context="$CONTEXT" --message "$MESSAGE" --hash="$1"
