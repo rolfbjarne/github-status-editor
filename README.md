@@ -7,6 +7,22 @@ It needs a Personal Access Token from GitHub, which can be created
 `Full control of private repositories` (it might be enough with
 `Access public repositories`, depending on the repository).
 
+## Getting Started
+
+In order to use the tool clone the repo and run `make all` at the root of the repo.
+
+### Update your path
+
+If you want to be able to call the tool from anywhere in your terminal you have two options:
+
+1. Adding the tool to your path temporarily by executing
+
+``` bash
+export PATH=$PATH:path/to/github-status-editor
+```
+
+2. Adding the tool to your path permanently by updating your `~/.bashrc`, `~/.zshrc` or equivalent. Simply find the existing `export PATH` there and add `path/to/github-status-editor` at the end.
+
 ## Examples
 
 ### List the statuses for a commit
