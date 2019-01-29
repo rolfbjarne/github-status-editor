@@ -8,6 +8,7 @@ using System.Web.Script.Serialization;
 using Mono.Options;
 
 class MainClass {
+	static JavaScriptSerializer js = new JavaScriptSerializer ();
 	public async static Task<int> Main (string [] args)
 	{
 		var show_help = false;
@@ -173,10 +174,10 @@ class MainClass {
 			//Console.WriteLine ($"Adding status using url: {url}");
 			var data = $@"
 {{
-""state"": ""{status.State}"",
-""target_url"": ""{status.Target_Url}"",
-""description"": ""{status.Description}"",
-""context"": ""{status.Context}""
+""state"": {js.Serialize (status.State)},
+""target_url"": {js.Serialize (status.Target_Url)},
+""description"": {js.Serialize (status.Description)},
+""context"": {js.Serialize (status.Context)}
 }}
 ";
 			var content = new StringContent (data);
@@ -198,7 +199,6 @@ class MainClass {
 	{
 		try {
 			var url = $"https://api.github.com/repos/{repository}/commits/{hash}/comments";
-			var js = new JavaScriptSerializer ();
 			var data = $@"
 {{
 ""body"": {js.Serialize (comment)}
