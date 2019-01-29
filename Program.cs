@@ -184,10 +184,11 @@ class MainClass {
 			var task = wc.PostAsync (url, content);
 			var create_status = await task;
 
-			//Console.WriteLine ($"Creation result: {wc}");
-			//foreach (var h in create_status.RequestMessage.Headers)
-			//	Console.WriteLine ($"{h.Key}={h.Value}");
-			//Console.WriteLine ($"Status creation result: {create_status}");
+			if (!create_status.IsSuccessStatusCode) {
+				Console.WriteLine ($"Failed to set status: {create_status}");
+				return 1;
+			}
+
 			return 0;
 		} catch (WebException e) {
 			DumpWebException (e);
