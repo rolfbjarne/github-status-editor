@@ -25,8 +25,11 @@ if test -n "$2"; then
 	MESSAGE="$2"
 fi
 
-CONTEXT="continuous-integration/jenkins/branch"
-if test -n "$3"; then
+if [ -z ${3+x} ]; then
+	if [ -z ${CONTEXT+x} ]; then
+		CONTEXT="continuous-integration/jenkins/branch"
+	fi
+else
 	CONTEXT="$3"
 fi
 
